@@ -11,10 +11,10 @@ validation=1;
 
 %validation set
 if (validation>0)
-    Xtr=Xtr(1:4000,:);
     Xval=Xtr(4001:end,:);
-    Ytr = Ytr(1:4000,:);
+    Xtr=Xtr(1:4000,:);
     Yval = Ytr(4001:end,:);
+    Ytr = Ytr(1:4000,:);
 end
 
 %compute K
@@ -48,6 +48,6 @@ end
 %compute scores for the validation set
 score=compute_score(n,alpha,Xval,Xtr,sigma,1); %set last parameter to 1 to track progress
 [~,attrib] = max(score, [], 2);
-
-score = norm((attrib-Yval(:,2)) == 0)/length(Yval);
+interm = attrib-Yval(:,2) == 0;
+score_final = norm(single(interm), 1)/length(Yval);
 
