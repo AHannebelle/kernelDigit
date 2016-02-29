@@ -13,10 +13,10 @@ for digit=1:10 %for each digit 'digit-1'
         for j=1:n
             output=output+a(j)*gaussian_dist(x,Xtr(j,:), sigma);
         end
-        if(print>0 && mod(j,1000)==0)
-             ['image ' num2str(i)]
+        if(print>0 && rem(j,1000)==0)
+             %['image ' num2str(i)]
         end
-        score(i,digit) = output;
-        i        
+        score(i,digit) = output;      
     end
+    digit
 end
