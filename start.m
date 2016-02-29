@@ -11,14 +11,16 @@ validation=1;
 
 %validation set
 if (validation>0)
-    Xval=Xtr(4001:end,:);
-    Xtr=Xtr(1:4000,:);
-    Yval = Ytr(4001:end,:);
-    Ytr = Ytr(1:4000,:);
+    Xval=Xtr(1001:2000,:);
+    Xtr=Xtr(1:1000,:);
+    Yval = Ytr(1001:2000,:);
+    Ytr = Ytr(1:1000,:);
 end
 
 %compute K
 tic
+lambda= 0.1;
+sigma = 100;
 K = compute_k(Xtr, sigma);
 if (validation>0)
     save('K_val.mat','K');
@@ -36,18 +38,26 @@ toc
 
 
 n=length(Xtr);
-lambda= 1;
-sigma = 1;
+lambda= 0.00001;
+sigma = 10;
+for u = 1:5
+    sigma = 20
+    for v = 1:5
+        sigma = sigma - 3;
+        %compute alpha
+        for num=1:10  %on regarde si l'image correspond au chiffre num-1
+            label=single(Ytr(1:1000,2) == num-1)-single(Ytr(1:1000,2)~=num-1);
+            alpha{num}=(K+lambda*1000*eye(1000))\label;
+        end
 
-%compute alpha
-for num=1:10  %on regarde si l'image correspond au chiffre num-1
-    alpha{num}=(K+lambda*n*eye(n))\Ytr(:,2);
+
+        %compute scores for the validation set
+        score=compute_score(n,alpha,Xval,Xtr,sigma,1); %set last parameter to 1 to track progress
+        [~,attrib] = max(score, [], 2);
+        interm = (attrib-1)-Yval(:,2) == 0;
+        score_final(u,v) = norm(single(interm), 1)/length(Yval)
+    end
+    lambda = lambda /10;
 end
 
-
-%compute scores for the validation set
-score=compute_score(n,alpha,Xval,Xtr,sigma,1); %set last parameter to 1 to track progress
-[~,attrib] = max(score, [], 2);
-interm = attrib-Yval(:,2) == 0;
-score_final = norm(single(interm), 1)/length(Yval);
 
