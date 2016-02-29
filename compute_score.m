@@ -1,12 +1,12 @@
 function score=compute_score(n,alpha,Xte,Xtr,sigma,print)
 
-score=zeros(length(Xte),10);  %proba que le ie test� est le chifre j
+score=zeros(size(Xte,1),10);  %proba que le ie test� est le chifre j
 for digit=1:10 %for each digit 'digit-1'
     %compute probability vector
     if (print>0)
      [num2str(digit) 'e chiffre']
     end
-    for i=1:length(Xte)
+    for i=1:size(Xte,1)
         a=alpha{digit}; %vector alpha
         x=Xte(i,:); %test image
         output=0;
@@ -18,5 +18,4 @@ for digit=1:10 %for each digit 'digit-1'
         end
         score(i,digit) = output;      
     end
-    digit
 end
