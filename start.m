@@ -7,16 +7,16 @@ Ytr=Ytr.Ytr;
 n=length(Xtr);
 
 %problem parameters
-lambda= 10;
+lambda= 10^(-4);
 sigma = 10;
 validation=1;
 
 %validation set
 if (validation>0)
     Xval=Xtr(4001:end,:);
-    Xtr=Xtr(1:4000,:);
+    Xtr=Xtr(1:1000,:);
     Yval=Ytr(4001:end,:);
-    Ytr=Ytr(1:4000,:);
+    Ytr=Ytr(1:1000,:);
 end
 
 %compute K
@@ -42,11 +42,14 @@ end
 
 %compute scores for the validation set
 numval=500;
-score=compute_score(numval,alpha,Xval(1:numval,:),Xtr,sigma,1); %set last parameter to 1 to track progress
+nrotate=13;    %si nrotate>0, on classifie plusieurs versions de l'image test
+                %avec différentes légères rotations, et on garde le
+                %meilleur score pour chaque classifieur. (de -45° à +45°)
+score=compute_score(numval,alpha,Xval(1:numval,:),Xtr,sigma,1,nrotate); %set last parameter to 1 to track progress
 [~,attrib]=max(score,[],2);
 diff=(attrib-Yval(1:numval,2)-1) == 0;
 scorefinal = norm(single(diff),1)/numval
 
 %compute scores for the test set
-% score=compute_score(n,alpha,Xte,Xtr,sigma,1); %set last parameter to 1 to track progress
+% score=compute_score(n,alpha,Xte,Xtr,sigma,1,nrotate); %set last parameter to 1 to track progress
 % [~,attrib]=max(score);
