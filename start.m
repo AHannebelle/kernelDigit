@@ -4,17 +4,19 @@ Ytr=load('data/Ytr.mat');
 Ytr=Ytr.Ytr;
 
 %problem constants
+n=length(Xtr);
 
 %problem parameters
-
+lambda= 10;
+sigma = 10;
 validation=1;
 
 %validation set
 if (validation>0)
-    Xtr=Xtr(1:4000,:);
     Xval=Xtr(4001:end,:);
-    Ytr = Ytr(1:4000,:);
-    Yval = Ytr(4001:end,:);
+    Xtr=Xtr(1:4000,:);
+    Yval=Ytr(4001:end,:);
+    Ytr=Ytr(1:4000,:);
 end
 
 %compute K
@@ -31,23 +33,20 @@ toc
 
 %show(Xtr(2,:))
 
-
-%compute K
-
-
-n=length(Xtr);
-lambda= 1;
-sigma = 1;
-
+l=length(Xtr);
 %compute alpha
 for num=1:10  %on regarde si l'image correspond au chiffre num-1
-    alpha{num}=(K+lambda*n*eye(n))\Ytr(:,2);
+    label=100*(single(Ytr(1:l,2)==num-1)-single(Ytr(1:l,2)~=num-1));
+    alpha{num}=(K+lambda*l*eye(l))\label;
 end
 
-
 %compute scores for the validation set
-score=compute_score(n,alpha,Xval,Xtr,sigma,1); %set last parameter to 1 to track progress
-[~,attrib] = max(score, [], 2);
+numval=500;
+score=compute_score(numval,alpha,Xval(1:numval,:),Xtr,sigma,1); %set last parameter to 1 to track progress
+[~,attrib]=max(score,[],2);
+diff=(attrib-Yval(1:numval,2)-1) == 0;
+scorefinal = norm(single(diff),1)/numval
 
-score = norm((attrib-Yval(:,2)) == 0)/length(Yval);
-
+%compute scores for the test set
+% score=compute_score(n,alpha,Xte,Xtr,sigma,1); %set last parameter to 1 to track progress
+% [~,attrib]=max(score);
